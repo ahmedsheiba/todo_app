@@ -11,21 +11,33 @@ class DialogBox extends StatelessWidget {
   VoidCallback onSave;
   VoidCallback onCancel;
 
+  final _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      backgroundColor: Colors.grey.shade900,
-      content: TextField(
-        controller: controller,
-        style: const TextStyle(color: Colors.white),
-        decoration: InputDecoration(
-          label: const Text(
-            'Add New Task..',
-            style: TextStyle(color: Colors.white),
+      content: Form(
+        key: _formKey,
+        child: TextFormField(
+          controller: controller,
+          style: const TextStyle(color: Colors.white),
+          decoration: InputDecoration(
+            label: const Text(
+              'Add New Task..',
+              style: TextStyle(color: Colors.white),
+            ),
+            focusedBorder: _border,
+            border: _border,
+            enabledBorder: _border,
           ),
-          focusedBorder: _border,
-          border: _border,
-          enabledBorder: _border,
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Please enter your task';
+            } else {
+              return null;
+            }
+          },
+          autovalidateMode: AutovalidateMode.onUserInteraction,
         ),
       ),
       actions: [
@@ -41,7 +53,11 @@ class DialogBox extends StatelessWidget {
             const SizedBox(width: 20),
             Expanded(
               child: ElevatedButton(
-                onPressed: onSave,
+                onPressed: () {
+                  if (_formKey.currentState?.validate() == true) {
+                    return onSave();
+                  }
+                },
                 child: const Text('Save'),
               ),
             ),
